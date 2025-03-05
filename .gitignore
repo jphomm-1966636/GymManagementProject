@@ -4,18 +4,19 @@ npm-debug.log*
 yarn-error.log*
 
 # Ignore environment variables (security reasons)
-backend/.env
-frontend/.env
+gym-management-backend/.env
+gym-management-frontend/.env
+.env
 
 # Ignore build outputs
-frontend/build/
-backend/dist/
+gym-management-frontend/build/
+gym-management-backend/dist/
 
 # Ignore log files
 logs/
 *.log
-backend/logs/
-frontend/logs/
+gym-management-backend/logs/
+gym-management-frontend/logs/
 
 # Ignore database-related files
 *.sql
