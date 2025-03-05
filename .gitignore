@@ -1,0 +1,26 @@
+# Ignore node_modules for both frontend & backend
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Ignore environment variables (security reasons)
+backend/.env
+frontend/.env
+
+# Ignore build outputs
+frontend/build/
+backend/dist/
+
+# Ignore log files
+logs/
+*.log
+backend/logs/
+frontend/logs/
+
+# Ignore database-related files
+*.sql
+*.sqlite
+*.db
+
+# Ignore VS Code workspace settings
+.vscode/
