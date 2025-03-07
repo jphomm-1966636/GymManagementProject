@@ -2,7 +2,8 @@
   "name": "gymmanagementproject",
   "version": "1.0.0",
   "description": "🛠 Gym Management Project - TCSS 445\r By: Jay Phommakhot & Jennifer Huynh\r This project was built for TCSS 445 to demonstrate database management skills.",
-  "main": "index.js",
+  "main": "server.js",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "react-scripts start"
@@ -10,6 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-table": "^8.21.2",
+    "axios": "^1.8.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mssql": "^11.0.1",
+    "mysql": "^2.18.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-scripts": "^5.0.1"
@@ -25,5 +34,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "keywords": []
 }
