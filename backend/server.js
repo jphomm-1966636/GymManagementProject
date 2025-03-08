@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const sql = require('mssql');
 const cors = require('cors');
 
 const app = express();
@@ -8,16 +7,22 @@ app.use(cors());
 app.use(express.json());
 
 // Database configuration
+const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
+
 const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER,
-    database: process.env.DB_DATABASE,
+    server: process.env.DB_SERVER?.trim(),
+    database: process.env.DB_DATABASE?.trim(),
+    port: parseInt(process.env.DB_PORT, 10),
     options: {
-        encrypt: true, 
-        trustServerCertificate: true 
-    }
-};
+      encrypt: false,
+      trustServerCertificate: true,
+    },
+    authentication: {
+      type: "default", // ✅ Windows Authentication
+    },
+  };
+  
+
 
 // connect to database
 async function connectDB() {
@@ -31,13 +36,13 @@ async function connectDB() {
 connectDB();
 
 // connect to database
-const poolPromise = new sql.ConnectionPool(dbConfig)
-    .connect()
-    .then(pool => {
-        console.log('Connected to Microsoft SQL Server');
-        return pool;
-    })
-    .catch(err => console.error('Database connection failed:', err));
+// const poolPromise = new sql.ConnectionPool(dbConfig)
+//     .connect()
+//     .then(pool => {
+//         console.log('Connected to Microsoft SQL Server');
+//         return pool;
+//     })
+//     .catch(err => console.error('Database connection failed:', err));
 
 
 // // verify db connection
