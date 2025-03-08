@@ -27,7 +27,7 @@ const dbConfig = {
 // connect to database
 async function connectDB() {
     try {
-        await sql.connect(dbConfig);
+        await sql.connect(dbConfig); // database configuration
         console.log('Connected to SQL Server');
     } catch (err) {
         console.error('Database connection failed:', err);
@@ -55,22 +55,22 @@ connectDB();
 // });
 
 
-// get gym details
+// get gym details (address & opening/closing time) for a specific gym - based on given gym id
 app.get('/gyms/:gymId', async (req, res) => {
     try {
         const pool = await poolPromise;
-        const { gymId } = req.params;
+        const { gymId } = req.params; // get gym id
         const result = await pool.request()
             .input('GymID', sql.Int, gymId)
             .query(`SELECT GymAddress, OpeningTime, ClosingTime FROM GYMS WHERE GymID = @GymID`);
         res.json(result.recordset);
     } catch (err) {
         console.error('Database query failed:', err);
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
-// get payroll details
+// get payroll details for all employees
 app.get('/payroll', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -84,11 +84,11 @@ app.get('/payroll', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
-// get invoice details
+// get invoice details for all customers
 app.get('/invoices', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -103,11 +103,11 @@ app.get('/invoices', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
-// get busiest gym hours
+// get busiest gym hours - based on check-ins
 app.get('/checkins', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -120,7 +120,7 @@ app.get('/checkins', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
@@ -143,7 +143,7 @@ app.get('/shifts', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
@@ -163,7 +163,32 @@ app.get('/trainers/appointments', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
+    }
+});
+
+// get classes by instructor
+app.get('/classes/instructor', async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
+            SELECT 
+                CI.InstructorID,
+                COALESCE(P.PersonName, 'Unknown') AS InstructorName,
+                C.ClassID,
+                C.Details AS ClassName,
+                C.ClassDate,
+                C.ClassTime,
+                C.Capacity
+            FROM CLASS_INSTRUCTORS CI
+            JOIN EMPLOYEES E ON CI.InstructorID = E.EmployeeID
+            LEFT JOIN PERSONS P ON E.EmployeeID = P.PersonID 
+            JOIN CLASSES C ON CI.ClassID = C.ClassID
+            ORDER BY C.ClassDate, C.ClassTime
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).send(err.message); // internal server error
     }
 });
 
@@ -184,25 +209,25 @@ app.get('/classes/available', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
-// update gym check-in count
+// update gym check-in count for a specific gym - based on given gym id
 app.put('/gyms/checkin/:gymId', async (req, res) => {
     try {
         const pool = await poolPromise;
-        const { gymId } = req.params;
+        const { gymId } = req.params; // get gym id
         await pool.request()
             .input('GymID', sql.Int, gymId)
             .query(`UPDATE GYMS SET DailyCheckins = DailyCheckins + 1 WHERE GymID = @GymID`);
         res.json({ message: 'Check-in updated successfully' });
     } catch (err) {
-        res.status(500).send(err.message);
+        res.status(500).send(err.message); // internal server error
     }
 });
 
-// Start server
+// start server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
