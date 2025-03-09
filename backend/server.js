@@ -1,61 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database configuration
-const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
+// ✅ Verify Database Connection on Startup
+poolPromise.then(() => {
+    console.log("✅ Successfully connected to SQL Server!");
+}).catch(err => {
+    console.error("❌ Database connection failed:", err);
+});
 
-const dbConfig = {
-    server: process.env.DB_SERVER?.trim(),
-    database: process.env.DB_DATABASE?.trim(),
-    port: parseInt(process.env.DB_PORT, 10),
-    options: {
-      encrypt: false,
-      trustServerCertificate: true,
-    },
-    authentication: {
-      type: "default", // ✅ Windows Authentication
-    },
-  };
-  
-
-
-// connect to database
-async function connectDB() {
-    try {
-        await sql.connect(dbConfig);
-        console.log('Connected to SQL Server');
-    } catch (err) {
-        console.error('Database connection failed:', err);
-    }
-}
-connectDB();
-
-// connect to database
-// const poolPromise = new sql.ConnectionPool(dbConfig)
-//     .connect()
-//     .then(pool => {
-//         console.log('Connected to Microsoft SQL Server');
-//         return pool;
-//     })
-//     .catch(err => console.error('Database connection failed:', err));
-
-
-// // verify db connection
-// db.connect(err => {
-//     if (err) {
-//         console.error('Database connection failed:', err);
-//     } else {
-//         console.log('Connected to MySQL database.');
-//     }
-// });
-
-
-// get gym details
+// ✅ Get Gym Details
 app.get('/gyms/:gymId', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -65,12 +24,12 @@ app.get('/gyms/:gymId', async (req, res) => {
             .query(`SELECT GymAddress, OpeningTime, ClosingTime FROM GYMS WHERE GymID = @GymID`);
         res.json(result.recordset);
     } catch (err) {
-        console.error('Database query failed:', err);
+        console.error('❌ Database query failed:', err);
         res.status(500).send(err.message);
     }
 });
 
-// get payroll details
+// ✅ Get Payroll Details
 app.get('/payroll', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -88,7 +47,7 @@ app.get('/payroll', async (req, res) => {
     }
 });
 
-// get invoice details
+// ✅ Get Invoice Details
 app.get('/invoices', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -107,7 +66,7 @@ app.get('/invoices', async (req, res) => {
     }
 });
 
-// get busiest gym hours
+// ✅ Get Busiest Gym Hours
 app.get('/checkins', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -124,7 +83,7 @@ app.get('/checkins', async (req, res) => {
     }
 });
 
-// get employees clock-in/out status
+// ✅ Get Employees Clock-In/Out Status
 app.get('/shifts', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -147,48 +106,28 @@ app.get('/shifts', async (req, res) => {
     }
 });
 
-// get trainer appointments
-app.get('/trainers/appointments', async (req, res) => {
+// ✅ Get Available/Open Classes
+app.get('/classes', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
             SELECT 
-                E.EmployeeID, P_Trainer.PersonName AS TrainerName, A.PersonID AS CustomerID, 
-                P_Customer.PersonName AS CustomerName, A.ApptTime, A.ApptType, A.WorkoutDetails
-            FROM EMPLOYEES_CUSTOMER_APPTS A
-            JOIN EMPLOYEES E ON A.TrainerID = E.EmployeeID
-            JOIN PERSONS P_Trainer ON E.EmployeeID = P_Trainer.PersonID
-            JOIN PERSONS P_Customer ON A.PersonID = P_Customer.PersonID
-            ORDER BY A.ApptTime
+                ClassID, 
+                Details AS ClassName, 
+                ClassDate, 
+                ClassTime, 
+                Capacity
+            FROM CLASSES
         `);
         res.json(result.recordset);
     } catch (err) {
+        console.error("Database query failed:", err);
         res.status(500).send(err.message);
     }
 });
 
-// get available/open classes
-app.get('/classes/available', async (req, res) => {
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request().query(`
-            SELECT 
-                C.ClassID, CAST(C.Details AS VARCHAR(MAX)) AS ClassName, 
-                C.ClassDate, C.ClassTime, C.Capacity, 
-                (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) AS OpenSlots
-            FROM CLASSES C
-            LEFT JOIN CLASS_RESERVATIONS R ON C.ClassID = R.ClassID
-            GROUP BY C.ClassID, CAST(C.Details AS VARCHAR(MAX)), C.ClassDate, C.ClassTime, C.Capacity
-            HAVING (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) > 0
-            ORDER BY C.ClassDate, C.ClassTime
-        `);
-        res.json(result.recordset);
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
-});
 
-// update gym check-in count
+// ✅ Update Gym Check-In Count
 app.put('/gyms/checkin/:gymId', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -202,8 +141,8 @@ app.put('/gyms/checkin/:gymId', async (req, res) => {
     }
 });
 
-// Start server
-const PORT = process.env.PORT || 5001;
+// ✅ Start Server
+const PORT = process.env.PORT || 5001;  // ✅ Changed DB_PORT to PORT for Express server
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
