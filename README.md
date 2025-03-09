@@ -67,8 +67,11 @@ Before running this project, make sure you have installed:
         REACT_APP_DB_DATABASE=GymManagement
         REACT_APP_DB_PORT=1433
 
-4️⃣ Start the React Frontend
-    in the terminal use:
+4️⃣ Start the React Frontend & Backend
+    in the terminal use (/frontend/):
         - npm start
     Then, open your browser and go to:
         - http://localhost:3000
+
+    For the backend, in the terminal, use (/backend/):
+        - nodemon server.js
