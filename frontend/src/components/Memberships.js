@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Card, CardContent } from "@mui/material";
 
-function Membership() {
-  const [plans, setPlans] = useState([]);
+const Memberships = () => {
+  const [memberships, setMemberships] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/memberships") // Fetch data from backend
-      .then((res) => res.json())
-      .then((data) => setPlans(data))
-      .catch((err) => console.error("API Error:", err));
+    fetch("http://localhost:5001/membership") // ✅ Correct API route
+      .then(response => response.json()) 
+      .then(data => setMemberships(data))
+      .catch(error => console.error("Error fetching memberships:", error));
   }, []);
 
   return (
-    <Container>
-      <Typography variant="h4" style={{ margin: "20px 0" }}>
-        Membership Plans
-      </Typography>
-      {plans.map((plan) => (
-        <Card key={plan.MembershipID} style={{ marginBottom: "10px" }}>
-          <CardContent>
-            <Typography variant="h5">{plan.TypeOfMembership}</Typography>
-            <Typography variant="h6">${plan.AssociatedCost} per month</Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </Container>
+    <div>
+      <h2>Membership Plans</h2>
+      {memberships.length === 0 ? (
+        <p>Loading memberships...</p>
+      ) : (
+        <ul>
+          {memberships.map((m) => (
+            <li key={m.MembershipID}>
+              {m.TypeOfMembership} - ${m.AssociatedCost}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
-}
+};
 
-export default Membership;
+export default Memberships;

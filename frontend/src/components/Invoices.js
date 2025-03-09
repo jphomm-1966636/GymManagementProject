@@ -5,7 +5,7 @@ function Invoices() {
   const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/invoices") // Backend API for invoices
+    fetch("http://localhost:3000/invoices") // Backend API for invoices
       .then((res) => res.json())
       .then((data) => setInvoices(data))
       .catch((err) => console.error("API Error:", err));

@@ -5,7 +5,7 @@ function Users() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/users") // Backend API for users
+    fetch("http://localhost:3000/users") // Backend API for users
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error("API Error:", err));

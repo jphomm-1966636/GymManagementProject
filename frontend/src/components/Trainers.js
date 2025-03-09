@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Card, CardContent } from "@mui/material";
 
-function Trainers() {
+const Trainers = () => {
   const [trainers, setTrainers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/trainers") // Backend API for trainers
-      .then((res) => res.json())
-      .then((data) => setTrainers(data))
-      .catch((err) => console.error("API Error:", err));
+    fetch("http://localhost:5001/trainers") // ✅ Calls the backend API
+      .then(response => response.json())
+      .then(data => setTrainers(data))
+      .catch(error => console.error("Error fetching trainers:", error));
   }, []);
 
   return (
-    <Container>
-      <Typography variant="h4" style={{ margin: "20px 0" }}>Trainers</Typography>
-      {trainers.map((trainer) => (
-        <Card key={trainer.EmployeeID} style={{ marginBottom: "10px" }}>
-          <CardContent>
-            <Typography variant="h5">{trainer.Position}</Typography>
-            <Typography variant="h6">Hire Date: {trainer.HireDate}</Typography>
-            <Typography variant="h6">Specialties: {trainer.Specialties}</Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </Container>
+    <div>
+      <h2>Trainers</h2>
+      {trainers.length === 0 ? (
+        <p>Loading trainers...</p>
+      ) : (
+        <ul>
+          {trainers.map((t) => (
+            <li key={t.EmployeeID}>
+              <strong>{t.PersonName}</strong> - {t.RoleTitle}
+              <br />
+              Specialties: {t.Specialties || "None"}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
-}
+};
 
 export default Trainers;

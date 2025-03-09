@@ -29,6 +29,20 @@ app.get('/gyms/:gymId', async (req, res) => {
     }
 });
 
+app.get('/membership', async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
+            SELECT MembershipID, TypeOfMembership, AssociatedCost FROM MEMBERSHIP_PLANS
+        `);
+        res.json(result.recordset); // ✅ Ensures JSON is returned
+    } catch (err) {
+        console.error("Database query failed:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 // get payroll details for all employees
 app.get('/payroll', async (req, res) => {
     try {
@@ -107,23 +121,49 @@ app.get('/shifts', async (req, res) => {
 });
 
 // ✅ Get Available/Open Classes
-app.get('/classes', async (req, res) => {
+app.get("/classes", async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
             SELECT 
                 ClassID, 
                 Details AS ClassName, 
-                ClassDate, 
-                ClassTime, 
+                FORMAT(ClassDate, 'yyyy-MM-dd') AS ClassDate,
+                CONVERT(VARCHAR(8), ClassTime, 108) AS ClassTime,
                 Capacity
             FROM CLASSES
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message); // internal server error
+        res.status(500).send("❌ Database error: " + err.message);
     }
 });
+
+
+
+app.get("/classes/available", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
+            SELECT 
+                C.ClassID, 
+                C.Details AS ClassName, 
+                FORMAT(C.ClassDate, 'yyyy-MM-dd') AS ClassDate,
+                CONVERT(VARCHAR(8), C.ClassTime, 108) AS ClassTime,
+                C.Capacity, 
+                (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) AS OpenSlots
+            FROM CLASSES C
+            LEFT JOIN CLASS_RESERVATIONS R ON C.ClassID = R.ClassID
+            GROUP BY C.ClassID, C.Details, C.ClassDate, C.ClassTime, C.Capacity
+            HAVING (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) > 0
+            ORDER BY C.ClassDate, C.ClassTime
+        `);
+        res.json(result.recordset);
+    } catch (err) {
+        res.status(500).send("❌ Database error: " + err.message);
+    }
+});
+
 
 // get classes by instructor
 app.get('/classes/instructor', async (req, res) => {
@@ -152,26 +192,6 @@ app.get('/classes/instructor', async (req, res) => {
     }
 });
 
-// get available/open classes
-app.get('/classes/available', async (req, res) => {
-    try {
-        const pool = await poolPromise;
-        const result = await pool.request().query(`
-            SELECT 
-                C.ClassID, CAST(C.Details AS VARCHAR(MAX)) AS ClassName, 
-                C.ClassDate, C.ClassTime, C.Capacity, 
-                (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) AS OpenSlots
-            FROM CLASSES C
-            LEFT JOIN CLASS_RESERVATIONS R ON C.ClassID = R.ClassID
-            GROUP BY C.ClassID, CAST(C.Details AS VARCHAR(MAX)), C.ClassDate, C.ClassTime, C.Capacity
-            HAVING (C.Capacity - COALESCE(SUM(R.TotalReservations), 0)) > 0
-            ORDER BY C.ClassDate, C.ClassTime
-        `);
-        res.json(result.recordset);
-    } catch (err) {
-        res.status(500).send(err.message); // internal server error
-    }
-});
 
 // update gym check-in count for a specific gym - based on given gym id
 app.put('/gyms/checkin/:gymId', async (req, res) => {
@@ -184,6 +204,25 @@ app.put('/gyms/checkin/:gymId', async (req, res) => {
         res.json({ message: 'Check-in updated successfully' });
     } catch (err) {
         res.status(500).send(err.message); // internal server error
+    }
+});
+
+// fetch all trainers
+app.get('/trainers', async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request().query(`
+            SELECT 
+                E.EmployeeID, P.PersonName, GJR.RoleTitle, E.Specialties
+            FROM EMPLOYEES E
+            JOIN PERSONS P ON E.EmployeeID = P.PersonID
+            JOIN GYM_JOB_ROLES GJR ON E.RolesID = GJR.RolesID
+            WHERE E.RolesID = 2
+        `);
+        res.json(result.recordset); // ✅ Sends JSON response
+    } catch (err) {
+        console.error("Database query failed:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
