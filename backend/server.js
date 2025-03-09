@@ -1,20 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
+const { sql, poolPromise } = require("./database"); // import only from database.js
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Verify Database Connection on Startup
+// Verify database connection on startup
 poolPromise.then(() => {
     console.log("✅ Successfully connected to SQL Server!");
 }).catch(err => {
     console.error("❌ Database connection failed:", err);
 });
 
-// ✅ Get Gym Details
+// Get gym details
 app.get('/gyms/:gymId', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -29,16 +29,17 @@ app.get('/gyms/:gymId', async (req, res) => {
     }
 });
 
+// Get types memberships 
 app.get('/membership', async (req, res) => {
     try {
         const pool = await poolPromise;
         const result = await pool.request().query(`
             SELECT MembershipID, TypeOfMembership, AssociatedCost FROM MEMBERSHIP_PLANS
         `);
-        res.json(result.recordset); // ✅ Ensures JSON is returned
+        res.json(result.recordset);
     } catch (err) {
         console.error("Database query failed:", err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message }); // internal server error
     }
 });
 
@@ -97,7 +98,7 @@ app.get('/checkins', async (req, res) => {
     }
 });
 
-// ✅ Get Employees Clock-In/Out Status
+// Get employees clock-in/out status
 app.get('/shifts', async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -120,7 +121,7 @@ app.get('/shifts', async (req, res) => {
     }
 });
 
-// ✅ Get Available/Open Classes
+// Get available/open classes
 app.get("/classes", async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -135,7 +136,7 @@ app.get("/classes", async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send("❌ Database error: " + err.message);
+        res.status(500).send(err.message);
     }
 });
 
@@ -186,7 +187,6 @@ app.get('/classes/instructor', async (req, res) => {
         `);
         res.json(result.recordset);
     } catch (err) {
-        res.status(500).send(err.message); // internal server error
         console.error("Database query failed:", err);
         res.status(500).send(err.message);
     }
@@ -219,15 +219,15 @@ app.get('/trainers', async (req, res) => {
             JOIN GYM_JOB_ROLES GJR ON E.RolesID = GJR.RolesID
             WHERE E.RolesID = 2
         `);
-        res.json(result.recordset); // ✅ Sends JSON response
+        res.json(result.recordset);
     } catch (err) {
         console.error("Database query failed:", err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// ✅ Start Server
-const PORT = process.env.PORT || 5001;  // ✅ Changed DB_PORT to PORT for Express server
+// Start Server
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
