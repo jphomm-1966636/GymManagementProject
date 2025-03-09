@@ -1,3 +1,13 @@
+NOTE: We encountered significant challenges when trying to establish a connection to the database server. Both of us spent several days troubleshooting on our own, 
+experimenting with different configurations and settings before finally making some progress. The process was not straightforward, as the instructions for setting 
+up the connection did not work universally — we each had to take different approaches to get it running.
+
+Due to these persistent issues, we had to continue working on both the frontend and backend without being able to fully test how they interacted with the database. 
+This meant developing parts of the application based on assumptions rather than direct validation. Despite these setbacks, we dedicated a significant amount of time 
+and effort to overcoming the barriers, ensuring that we made as much progress as possible within the given timeframe. While we were eventually able to establish a 
+connection, the complexity of the process limited the extent to which we could integrate and refine our work.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # GymManagementProject
 🛠 Gym Management Project - TCSS 445
 By: Jay Phommakhot & Jennifer Huynh
