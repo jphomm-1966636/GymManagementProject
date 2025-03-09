@@ -6,7 +6,7 @@ function AvailableClasses() {
   const [availableClasses, setAvailableClasses] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/classes/available") // ✅ Updated API endpoint
+    fetch("http://localhost:5001/classes/available")
       .then((res) => res.json())
       .then((data) => setAvailableClasses(data))
       .catch((err) => console.error("API Error:", err));
