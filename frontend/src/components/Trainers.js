@@ -4,7 +4,7 @@ const Trainers = () => {
   const [trainers, setTrainers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/trainers") // ✅ Calls the backend API
+    fetch("http://localhost:5001/trainers")
       .then(response => response.json())
       .then(data => setTrainers(data))
       .catch(error => console.error("Error fetching trainers:", error));
