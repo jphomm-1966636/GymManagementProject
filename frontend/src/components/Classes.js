@@ -6,7 +6,7 @@ function Classes() {
   const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/classes") // ✅ Updated API endpoint
+    fetch("http://localhost:5001/classes")
       .then((res) => res.json())
       .then((data) => setClasses(data))
       .catch((err) => console.error("API Error:", err));
