@@ -4,7 +4,7 @@ const Memberships = () => {
   const [memberships, setMemberships] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5001/membership") // ✅ Correct API route
+    fetch("http://localhost:5001/membership")
       .then(response => response.json()) 
       .then(data => setMemberships(data))
       .catch(error => console.error("Error fetching memberships:", error));
