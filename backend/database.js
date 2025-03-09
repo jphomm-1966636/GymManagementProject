@@ -1,16 +1,16 @@
 require("dotenv").config();
 const sql = require("mssql");
 
-// Database Configuration for SQL Authentication
+// Database configuration for SQL authentication
 const dbConfig = {
   server: process.env.DB_SERVER?.trim(),
   database: process.env.DB_DATABASE?.trim(),
   port: parseInt(process.env.DB_PORT, 10),
-  user: process.env.DB_USER?.trim(),  // ✅ SQL Authentication Username
-  password: process.env.DB_PASSWORD?.trim(),  // ✅ SQL Authentication Password
+  user: process.env.DB_USER?.trim(),  // SQL authentication username
+  password: process.env.DB_PASSWORD?.trim(),  // SQL authentication password
   options: {
-    encrypt: false,  // ⚠ Set to "true" if using Azure
-    trustServerCertificate: true,  // ✅ Trust self-signed certificates
+    encrypt: false, 
+    trustServerCertificate: true,  // trust self-signed certificates
   },
 };
 
@@ -25,4 +25,4 @@ const poolPromise = sql.connect(dbConfig)
     process.exit(1);
   });
 
-module.exports = { sql, poolPromise, dbConfig }; // ✅ Ensure dbConfig is exported
+module.exports = { sql, poolPromise, dbConfig }; // ensure dbConfig is exported
