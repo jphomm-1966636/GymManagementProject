@@ -23,5 +23,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

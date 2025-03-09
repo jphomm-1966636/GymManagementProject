@@ -1,39 +1,90 @@
 require('dotenv').config();
+const sql = require("mssql");
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
 // Database configuration
-const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
+// const { sql, poolPromise } = require("./database"); // ✅ Import only from database.js
 
+// Database Configuration
 const dbConfig = {
     server: process.env.DB_SERVER?.trim(),
-    database: process.env.DB_DATABASE?.trim(),
+    instanceName: process.env.DB_INSTANCE?.trim(),
+    database: process.env.DB_NAME?.trim(),
     port: parseInt(process.env.DB_PORT, 10),
+    user: process.env.DB_USER?.trim(),
+    password: process.env.DB_PASSWORD?.trim(),
     options: {
       encrypt: false,
       trustServerCertificate: true,
     },
     authentication: {
-      type: "default", // ✅ Windows Authentication
+      type: "default", // Windows Authentication
     },
   };
+
+  // get gym details
+app.get('/gyms2', async (req, res) => {
+    console.log('calling gyms');
+
+    try {
+        console.log('calling gyms');
+      // Connect to the database
+      await sql.connect(dbConfig);
   
+      // Query to get all rows from the 'gyms' table
+      const result = await sql.query`SELECT * FROM GYMS`;
+  
+      // Return the result as JSON
+      res.json(result.recordset);
+    } catch (err) {
+      // Handle errors (e.g., database connection issues)
+      console.error('Error fetching data:', err);
+      res.status(500).send('Error fetching data from the database');
+    } finally {
+      // Close the database connection after the request
+      sql.close();
+    }
+  });
 
 
 // connect to database
-async function connectDB() {
+// async function connectDB() {
+//     try {
+//         await sql.connect(dbConfig);
+//         console.log('Connected to SQL Server');
+//     } catch (err) {
+//         console.error('Database connection failed:', err);
+//     }
+// }
+// connectDB();
+
+// Establish a connection to the database
+async function connectToDatabase() {
     try {
-        await sql.connect(dbConfig);
-        console.log('Connected to SQL Server');
+      console.log('Connecting to SQL Server...');
+      
+      // Connect to the database using the configuration
+      await sql.connect(dbConfig);
+      console.log('Connected to SQL Server successfully!');
+
+    const result = await sql.query(`SELECT * FROM GYMS`);
+    console.log(result.recordset);
+      
     } catch (err) {
-        console.error('Database connection failed:', err);
+      console.error('Error connecting to SQL Server:', err);
+    } finally {
+      // Close the connection after query
+      sql.close();
     }
-}
-connectDB();
+  }
+  
+//   Run the connection function
+//   connectToDatabase();
 
 // connect to database
 // const poolPromise = new sql.ConnectionPool(dbConfig)
@@ -54,7 +105,6 @@ connectDB();
 //     }
 // });
 
-
 // get gym details
 app.get('/gyms/:gymId', async (req, res) => {
     try {
@@ -73,6 +123,7 @@ app.get('/gyms/:gymId', async (req, res) => {
 // get payroll details
 app.get('/payroll', async (req, res) => {
     try {
+        console.log('payroll');
         const pool = await poolPromise;
         const result = await pool.request().query(`
             SELECT 
@@ -203,7 +254,7 @@ app.put('/gyms/checkin/:gymId', async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.DB_PORT || 5001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
