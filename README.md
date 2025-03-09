@@ -25,6 +25,7 @@ This project was built for TCSS 445 to demonstrate database management skills.
 
 🛠 Prerequisites
 Before running this project, make sure you have installed:
+
 - Node.js (npm package manager)
 - Microsoft SQL Server (SQL Management Studio optional)
 - VS Code or any text editor
@@ -32,6 +33,7 @@ Before running this project, make sure you have installed:
 
 🚀 How to Run This Project
 1️⃣ Install Dependencies In Terminal
+
     - cd frontend
     - npm init
     - npm install
