@@ -4,13 +4,16 @@ import { AppBar, Toolbar, Button, Container, Typography } from "@mui/material";
 import Home from "./components/Home";
 import Membership from "./components/Memberships";
 import Classes from "./components/Classes";
+import AvailableClasses from "./components/AvailableClasses"; // ✅ Added Available Classes Page
 import Invoices from "./components/Invoices";
 import Trainers from "./components/Trainers";
 import Users from "./components/Users";
+import About from "./components/About"; // Import the About component
 
 function App() {
   return (
     <Router>
+      {/* Navigation Bar */}
       <AppBar position="static">
         <Toolbar>
           <Button color="inherit" component={Link} to="/">Home</Button>
@@ -19,21 +22,25 @@ function App() {
           <Button color="inherit" component={Link} to="/invoices">Invoices</Button>
           <Button color="inherit" component={Link} to="/classes">Classes</Button>
           <Button color="inherit" component={Link} to="/trainers">Trainers</Button>
+          <Button color="inherit" component={Link} to="/about">About</Button>
         </Toolbar>
       </AppBar>
 
+      {/* Page Content */}
       <Container>
         <Typography variant="h3" align="center" style={{ margin: "20px 0" }}>
           Gym Management System
         </Typography>
-        
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/membership" element={<Membership />} />
           <Route path="/users" element={<Users />} />
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/classes" element={<Classes />} />
+          <Route path="/classes/available" element={<AvailableClasses />} /> {/* ✅ Added Available Classes Page */}
           <Route path="/trainers" element={<Trainers />} />
+          <Route path="/about" element={<About />} />
         </Routes>
       </Container>
     </Router>
